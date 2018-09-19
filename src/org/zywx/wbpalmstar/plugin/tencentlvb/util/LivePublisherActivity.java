@@ -37,6 +37,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tencent.rtmp.ITXLivePushListener;
+import com.tencent.rtmp.TXLiveBase;
 import com.tencent.rtmp.TXLiveConstants;
 import com.tencent.rtmp.TXLivePushConfig;
 import com.tencent.rtmp.TXLivePusher;
@@ -309,7 +310,7 @@ public class LivePublisherActivity extends RTMPBaseActivity implements View.OnCl
                     }
                 }
                 if (HWVideoEncode != mHWVideoEncode) {
-                    mLivePushConfig.setHardwareAcceleration(mHWVideoEncode);
+                    mLivePushConfig.setHardwareAcceleration(mHWVideoEncode?TXLiveConstants.ENCODE_VIDEO_HARDWARE:TXLiveConstants.ENCODE_VIDEO_SOFTWARE);
                     if (mHWVideoEncode == false) {
                         Toast.makeText(getActivity().getApplicationContext(), "取消硬件加速", Toast.LENGTH_SHORT).show();
                     } else {
@@ -621,7 +622,7 @@ public class LivePublisherActivity extends RTMPBaseActivity implements View.OnCl
         mLivePushConfig.setPauseImg(bitmap);
         mLivePushConfig.setPauseFlag(TXLiveConstants.PAUSE_FLAG_PAUSE_VIDEO | TXLiveConstants.PAUSE_FLAG_PAUSE_AUDIO);
 
-        mLivePushConfig.setBeautyFilter(mBeautyLevel, mWhiteningLevel);
+        mLivePushConfig.setBeautyFilter(mBeautyLevel, mWhiteningLevel,0);
         mLivePusher.setConfig(mLivePushConfig);
         mLivePusher.setPushListener(this);
         mLivePusher.startCameraPreview(mCaptureView);
@@ -630,11 +631,13 @@ public class LivePublisherActivity extends RTMPBaseActivity implements View.OnCl
         //mLivePusher.setLogLevel(TXLiveConstants.LOG_LEVEL_DEBUG);
 
         clearLog();
-        int[] ver = TXLivePusher.getSDKVersion();
-        if (ver != null && ver.length >= 3) {
-            mLogMsg.append(String.format("rtmp sdk version:%d.%d.%d ", ver[0], ver[1], ver[2]));
-            mLogViewEvent.setText(mLogMsg);
-        }
+        String sdkVersionStr = TXLiveBase.getSDKVersionStr();
+        mLogViewEvent.setText(sdkVersionStr);
+//        int[] ver = TXLivePusher.getSDKVersion();
+//        if (ver != null && ver.length >= 3) {
+//            mLogMsg.append(String.format("rtmp sdk version:%d.%d.%d ", ver[0], ver[1], ver[2]));
+//            mLogViewEvent.setText(mLogMsg);
+//        }
 
         mBtnPlay.setBackgroundResource(EUExUtil.getResDrawableID("plugin_uextencentlvb_play_pause"));
 
@@ -653,7 +656,7 @@ public class LivePublisherActivity extends RTMPBaseActivity implements View.OnCl
 
         if(mBtnHWEncode != null) {
             //mHWVideoEncode = true;
-            mLivePushConfig.setHardwareAcceleration(mHWVideoEncode);
+            mLivePushConfig.setHardwareAcceleration(TXLiveConstants.ENCODE_VIDEO_SOFTWARE);
             mBtnHWEncode.setBackgroundResource(EUExUtil.getResDrawableID("plugin_uextencentlvb_quick"));
             mBtnHWEncode.getBackground().setAlpha(mHWVideoEncode ? 255 : 100);
         }
@@ -680,7 +683,7 @@ public class LivePublisherActivity extends RTMPBaseActivity implements View.OnCl
 //                    mLivePushConfig.setAutoAdjustBitrate(false);
 //                    mLivePushConfig.setVideoBitrate(1500);
 //                    mLivePusher.setConfig(mLivePushConfig);
-                    mLivePusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_SUPER_DEFINITION);
+                    mLivePusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_SUPER_DEFINITION,false,false);
                     //超清默认开启硬件加速
                     if (Build.VERSION.SDK_INT >= 18) {
                         mHWVideoEncode = true;
@@ -695,7 +698,7 @@ public class LivePublisherActivity extends RTMPBaseActivity implements View.OnCl
 //                    mLivePushConfig.setAutoAdjustBitrate(false);
 //                    mLivePushConfig.setVideoBitrate(1000);
 //                    mLivePusher.setConfig(mLivePushConfig);
-                    mLivePusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_HIGH_DEFINITION);
+                    mLivePusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_HIGH_DEFINITION,false,false);
                     mHWVideoEncode = false;
                     mBtnHWEncode.getBackground().setAlpha(100);
                 }
@@ -703,7 +706,7 @@ public class LivePublisherActivity extends RTMPBaseActivity implements View.OnCl
                 break;
             case 2: /*360p*/
                 if (mLivePusher != null) {
-                    mLivePusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_STANDARD_DEFINITION);
+                    mLivePusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_STANDARD_DEFINITION,false,false);
 //                    mLivePushConfig.setVideoResolution(TXLiveConstants.VIDEO_RESOLUTION_TYPE_360_640);
                     //标清默认开启了码率自适应，需要关闭码率自适应
                     mLivePushConfig.setAutoAdjustBitrate(false);
@@ -725,7 +728,7 @@ public class LivePublisherActivity extends RTMPBaseActivity implements View.OnCl
 //                    mLivePushConfig.setMinVideoBitrate(400);
 //                    mLivePushConfig.setVideoBitrate(700);
 //                    mLivePusher.setConfig(mLivePushConfig);
-                    mLivePusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_STANDARD_DEFINITION);
+                    mLivePusher.setVideoQuality(TXLiveConstants.VIDEO_QUALITY_STANDARD_DEFINITION,false,false);
                     //标清默认关闭硬件加速
                     mHWVideoEncode = false;
                     mBtnHWEncode.getBackground().setAlpha(100);
@@ -761,7 +764,7 @@ public class LivePublisherActivity extends RTMPBaseActivity implements View.OnCl
         }
         else if (event == TXLiveConstants.PUSH_WARNING_HW_ACCELERATION_FAIL) {
             Toast.makeText(getActivity().getApplicationContext(), param.getString(TXLiveConstants.EVT_DESCRIPTION), Toast.LENGTH_SHORT).show();
-            mLivePushConfig.setHardwareAcceleration(false);
+            mLivePushConfig.setHardwareAcceleration(TXLiveConstants.ENCODE_VIDEO_SOFTWARE);
             mBtnHWEncode.setBackgroundResource(EUExUtil.getResDrawableID("plugin_uextencentlvb_quick2"));
             mLivePusher.setConfig(mLivePushConfig);
             mHWVideoEncode = false;
@@ -805,7 +808,7 @@ public class LivePublisherActivity extends RTMPBaseActivity implements View.OnCl
         }
 
         if (mLivePusher != null) {
-            if (!mLivePusher.setBeautyFilter(mBeautyLevel, mWhiteningLevel)) {
+            if (!mLivePusher.setBeautyFilter(mBeautyLevel, mWhiteningLevel,0,0)) {
                 Toast.makeText(getActivity().getApplicationContext(), "当前机型的性能无法支持美颜功能", Toast.LENGTH_SHORT).show();
             }
         }

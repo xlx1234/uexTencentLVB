@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tencent.rtmp.ITXLivePlayListener;
+import com.tencent.rtmp.TXLiveBase;
 import com.tencent.rtmp.TXLiveConstants;
 import com.tencent.rtmp.TXLivePlayConfig;
 import com.tencent.rtmp.TXLivePlayer;
@@ -417,12 +418,13 @@ public class LivePlayerActivity extends RTMPBaseActivity implements ITXLivePlayL
         }
 
         clearLog();
-
-        int[] ver = TXLivePlayer.getSDKVersion();
-        if (ver != null && ver.length >= 3) {
-            mLogMsg.append(String.format("rtmp sdk version:%d.%d.%d ", ver[0], ver[1], ver[2]));
-            mLogViewEvent.setText(mLogMsg);
-        }
+        String sdkVersionStr = TXLiveBase.getSDKVersionStr();
+        mLogViewEvent.setText(sdkVersionStr);
+//        int[] ver = TXLivePlayer.getSDKVersion();
+//        if (ver != null && ver.length >= 3) {
+//            mLogMsg.append(String.format("rtmp sdk version:%d.%d.%d ", ver[0], ver[1], ver[2]));
+//            mLogViewEvent.setText(mLogMsg);
+//        }
         mBtnPlay.setBackgroundResource(EUExUtil.getResDrawableID("plugin_uextencentlvb_play_pause"));
 
         mLivePlayer.setPlayerView(mPlayerView);
