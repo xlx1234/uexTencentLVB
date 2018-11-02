@@ -12,7 +12,6 @@ import org.zywx.wbpalmstar.engine.EBrowserView;
 import org.zywx.wbpalmstar.engine.universalex.EUExBase;
 import org.zywx.wbpalmstar.plugin.tencentlvb.util.MainActivity;
 import org.zywx.wbpalmstar.plugin.tencentlvb.vo.DataVO;
-
 public class EUExTencentLVB extends EUExBase {
 
 	public static final int ACTION_PUBLISH = 1;
