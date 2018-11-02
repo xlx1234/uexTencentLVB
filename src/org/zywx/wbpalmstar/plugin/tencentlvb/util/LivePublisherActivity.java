@@ -822,6 +822,7 @@ public class LivePublisherActivity extends RTMPBaseActivity implements View.OnCl
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
 
+
     }
 
     @Override
