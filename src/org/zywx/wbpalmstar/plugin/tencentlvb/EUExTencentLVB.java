@@ -29,6 +29,7 @@ public class EUExTencentLVB extends EUExBase {
 
     public void vodPlay(String [] params) {
         if (params.length != 1) {
+
             return;
         }
         DataVO dataVO = DataHelper.gson.fromJson(params[0], DataVO.class);
