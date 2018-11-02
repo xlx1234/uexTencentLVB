@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <uexplugins>
-    <plugin uexName="uexTencentLVB" version="4.0.4" build="3">
+    <plugin uexName="uexTencentLVB" version="4.0.5" build="3">
         <info>4:sdk升级</info>
         <build>3:sdk升级，添加是否显示log功能按钮参数</build>
         <build>2:去除多余图片</build>
